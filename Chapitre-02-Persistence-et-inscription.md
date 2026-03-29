@@ -23,7 +23,7 @@ Etat du chapitre dans le repository:
 
 ## 2) Theorie detaillee
 
-## 2.1 Pourquoi separer Model et DTO
+### 2.1 Pourquoi separer Model et DTO
 
 Dans ce cours, on garde une separation stricte:
 
@@ -36,7 +36,7 @@ Cette separation est essentielle car:
 - des champs sensibles (mot de passe) restent internes,
 - les validations d'entree restent dans la couche dto/request.
 
-## 2.2 Place de l'enum `UserRole`
+### 2.2 Place de l'enum `UserRole`
 
 `UserRole` est un enum metier ferme (`USER`, `ADMIN`) qui apporte:
 
@@ -44,7 +44,7 @@ Cette separation est essentielle car:
 - moins d'erreurs qu'une chaine libre,
 - une base propre pour la securite du chapitre 3.
 
-## 2.3 Couche exceptions et validation
+### 2.3 Couche exceptions et validation
 
 Objectif: des erreurs predictibles pour le frontend (HTML/CSS/JavaScript + Bootstrap).
 
@@ -54,7 +54,7 @@ Le frontend doit recevoir des reponses uniformes:
 - `409` pour email deja utilise,
 - format JSON stable pour afficher les messages dans l'UI Bootstrap.
 
-## 2.4 Pattern DAO dans le projet
+### 2.4 Pattern DAO dans le projet
 
 Ce chapitre introduit aussi le pattern `DAO`.
 
@@ -73,7 +73,7 @@ Interet pedagogique:
 
 ## 3) Pratique step by step
 
-## Etape 1 - Configurer profils et base
+### Etape 1 - Configurer profils et base
 
 Fichiers:
 
@@ -88,7 +88,7 @@ Explication:
 - `test` cible H2 en memoire,
 - Flyway est actif dans les deux pour executer les migrations.
 
-## Etape 2 - Creer les migrations SQL
+### Etape 2 - Creer les migrations SQL
 
 Fichier: `authapp-code/src/main/resources/db/migration/V1__create_users_table.sql`
 
@@ -115,7 +115,7 @@ Durcissement SQL ajoute ensuite:
 - `authapp-code/src/main/resources/db/migration/V2__add_role_check_constraint.sql`
 - objectif: garantir en base que `role` appartient a `USER` ou `ADMIN`.
 
-## Etape 3 - Implementer Model et Enum
+### Etape 3 - Implementer Model et Enum
 
 Fichiers:
 
@@ -135,7 +135,7 @@ Explication:
 
 - enum ferme qui aligne metier + persistence + securite future.
 
-## Etape 4 - Ajouter le Repository
+### Etape 4 - Ajouter le Repository
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/user/repository/UserRepository.java`
 
@@ -153,7 +153,7 @@ Explication:
 - `existsByEmail` sert a la regle "email unique" avant insertion,
 - `findByEmail` sera reutilise pour la connexion JWT.
 
-## Etape 5 - Construire la couche DTO
+### Etape 5 - Construire la couche DTO
 
 Fichiers:
 
@@ -185,7 +185,7 @@ Explication:
 - validations cote backend obligatoires,
 - compatible avec affichage d'erreurs champ par champ sur frontend Bootstrap.
 
-## Etape 6 - Mapper DTO <-> Model
+### Etape 6 - Mapper DTO <-> Model
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/mapper/AuthDtoMapper.java`
 
@@ -199,7 +199,7 @@ Explication:
 - garde le controller et le service lisibles,
 - evite de melanger contrat HTTP et logique persistence.
 
-## Etape 7 - Service metier d'inscription
+### Etape 7 - Service metier d'inscription
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/service/AuthService.java`
 
@@ -225,7 +225,7 @@ Explication:
 - mot de passe stocke hash via `PasswordEncoder`,
 - exception metier claire en cas de doublon.
 
-## Etape 8 - Controller REST d'inscription
+### Etape 8 - Controller REST d'inscription
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/controller/AuthController.java`
 
@@ -245,7 +245,7 @@ Explication:
 - controller minimal: il delegue toute la logique au service,
 - response `201 Created` conforme REST.
 
-## Etape 9 - Etendre la couche exceptions
+### Etape 9 - Etendre la couche exceptions
 
 Ajouts:
 
@@ -257,7 +257,7 @@ But:
 
 - front vanilla JS + Bootstrap peut afficher des messages stables sans logique complexe.
 
-## Etape 9.1 - Contrats JSON de reference (a afficher cote frontend)
+### Etape 9.1 - Contrats JSON de reference (a afficher cote frontend)
 
 Succes `201`:
 
@@ -280,7 +280,7 @@ Erreur metier `409`:
 ```json
 {
   "timestamp": "2026-03-29T17:00:05Z",
-  "message": "Email already used: nexa.user@example.com",
+  "message": "Email is already used",
   "errorCode": "EMAIL_ALREADY_USED",
   "errors": []
 }
@@ -302,7 +302,7 @@ Erreur validation `400`:
 }
 ```
 
-## Etape 10 - Tester le flux
+### Etape 10 - Tester le flux
 
 Test integration: `authapp-code/src/test/java/com/nexa/cda/authapp/auth/controller/AuthControllerIntegrationTest.java`
 
@@ -333,7 +333,7 @@ curl -X POST http://localhost:8080/api/auth/register \
   -d '{"username":"nexa","email":"nexa.user@example.com","password":"StrongPass123"}'
 ```
 
-## Etape 11 - Exemple complet fonctionnel (DAO + DTO + Service)
+### Etape 11 - Exemple complet fonctionnel (DAO + DTO + Service)
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/user/dao/UserDao.java`
 
@@ -411,7 +411,7 @@ Explication complete de l'exemple:
 
 ---
 
-## 3.1 Quiz rapide (validation)
+### 3.1 Quiz rapide (validation)
 
 1. Pourquoi garder `dto` et `model` separes ?
 2. Pourquoi avoir a la fois un check `existsByEmail` et une contrainte SQL unique ?

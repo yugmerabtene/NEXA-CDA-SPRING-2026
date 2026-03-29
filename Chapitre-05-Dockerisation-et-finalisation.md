@@ -20,7 +20,7 @@ Etat du chapitre dans le repository:
 
 ## 2) Theorie detaillee
 
-## 2.1 Pourquoi dockeriser en fin de parcours
+### 2.1 Pourquoi dockeriser en fin de parcours
 
 La dockerisation sert a:
 
@@ -29,7 +29,7 @@ La dockerisation sert a:
 - simplifier la mise en production,
 - accelerer l'integration continue.
 
-## 2.2 Multi-stage build
+### 2.2 Multi-stage build
 
 Un Dockerfile multi-stage separe:
 
@@ -42,7 +42,7 @@ Avantages:
 - surface d'attaque reduite,
 - build plus propre et plus rapide avec cache.
 
-## 2.3 Pourquoi docker-compose
+### 2.3 Pourquoi docker-compose
 
 Notre application depend de PostgreSQL.
 
@@ -57,7 +57,7 @@ Notre application depend de PostgreSQL.
 
 ## 3) Pratique step by step
 
-## Etape 1 - Ajouter le Dockerfile
+### Etape 1 - Ajouter le Dockerfile
 
 Fichier: `authapp-code/Dockerfile`
 
@@ -67,7 +67,7 @@ Points cle:
 - stage `runtime` pour executer seulement,
 - `ENTRYPOINT` propre sur le jar.
 
-## Etape 2 - Ajouter `.dockerignore`
+### Etape 2 - Ajouter `.dockerignore`
 
 Fichier: `authapp-code/.dockerignore`
 
@@ -77,7 +77,7 @@ But:
 - accelerer les builds,
 - reduire la taille du contexte.
 
-## Etape 3 - Ajouter docker-compose
+### Etape 3 - Ajouter docker-compose
 
 Fichier: `authapp-code/docker-compose.yml`
 
@@ -115,7 +115,7 @@ Parametrage:
 - variables JWT (`JWT_SECRET` obligatoire),
 - port `8080` expose pour le frontend et les tests API.
 
-## Etape 4 - Construire et lancer
+### Etape 4 - Construire et lancer
 
 Commandes:
 
@@ -130,7 +130,7 @@ Explication:
 - `--build` force la reconstruction de l'image,
 - `ps` valide l'etat des conteneurs.
 
-## Etape 4.1 - Exemple complet fonctionnel (Dockerfile + Compose)
+### Etape 4.1 - Exemple complet fonctionnel (Dockerfile + Compose)
 
 Fichier: `authapp-code/Dockerfile`
 
@@ -196,7 +196,7 @@ Explication complete de l'exemple:
 - Compose attend une DB prete avant de lancer l'API.
 - `JWT_SECRET` est obligatoire en compose, ce qui evite les runs non securises.
 
-## Etape 5 - Verifier l'API dockerisee
+### Etape 5 - Verifier l'API dockerisee
 
 Commandes:
 
@@ -228,7 +228,7 @@ Puis reutiliser `data.token` pour appeler:
 curl http://localhost:8080/api/users/me -H "Authorization: Bearer <TOKEN>"
 ```
 
-## Etape 6 - Verifier la vue frontend
+### Etape 6 - Verifier la vue frontend
 
 La page est servie depuis `src/main/resources/static`.
 
@@ -250,7 +250,7 @@ Attention securite:
 
 ---
 
-## 3.1 Quiz rapide (validation)
+### 3.1 Quiz rapide (validation)
 
 1. Pourquoi utiliser un Dockerfile multi-stage ?
 2. Pourquoi ajouter un healthcheck sur la base de donnees ?
@@ -262,7 +262,7 @@ Corrige synthese:
 - Pour eviter que l'API demarre avant que la base soit prete.
 - Pour eviter fuite de credentials et compromission.
 
-## Etape 7 - Arret propre
+### Etape 7 - Arret propre
 
 Commandes:
 

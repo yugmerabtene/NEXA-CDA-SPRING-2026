@@ -23,7 +23,7 @@ Etat du chapitre dans le repository:
 
 ## 2) Theorie 
 
-## 2.1 Pourquoi Spring Boot
+### 2.1 Pourquoi Spring Boot
 
 Spring Boot permet de lancer tres vite une application robuste sans ecrire de configuration lourde.
 
@@ -36,7 +36,7 @@ Les avantages concrets:
 
 Pour une formation, cela permet de concentrer l'effort sur l'architecture et le metier, pas sur la plomberie.
 
-## 2.2 Architecture multi-layer (vision claire)
+### 2.2 Architecture multi-layer (vision claire)
 
 Architecture cible du projet:
 
@@ -53,7 +53,7 @@ Architecture cible du projet:
 
 Regle d'or: pas de logique metier dans les controllers.
 
-## 2.3 Pourquoi une couche exceptions des le debut
+### 2.3 Pourquoi une couche exceptions des le debut
 
 Ne pas centraliser les erreurs au debut cree rapidement:
 
@@ -71,7 +71,7 @@ Avec une couche `exceptions`, vous obtenez:
 
 ## 3) Pratique step by step (mise en place rapide)
 
-## Etape 1 - Generer le projet rapidement
+### Etape 1 - Generer le projet rapidement
 
 Commande utilisee:
 
@@ -84,7 +84,7 @@ Explication:
 - Java 21 pour rester sur une base moderne et stable,
 - dependances deja pretes pour les prochains chapitres (JPA, Security, Flyway).
 
-## Etape 2 - Configurer l'application
+### Etape 2 - Configurer l'application
 
 Fichier: `authapp-code/src/main/resources/application.yml`
 
@@ -104,7 +104,7 @@ Explication du code:
 - `profiles.default: dev` prepare la separation des environnements,
 - `port: 8080` fixe un point d'entree standard pour les tests locaux.
 
-## Etape 3 - Ajouter un contrat de reponse API standard
+### Etape 3 - Ajouter un contrat de reponse API standard
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/api/ApiResponse.java`
 
@@ -122,7 +122,7 @@ Explication du code:
 - le `record` simplifie le code et impose un format immuable,
 - `success(...)` evite de dupliquer la construction de reponses.
 
-## Etape 4 - Ajouter le endpoint de sante
+### Etape 4 - Ajouter le endpoint de sante
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/controller/HealthController.java`
 
@@ -143,7 +143,7 @@ Explication du code:
 - endpoint technique simple pour valider le demarrage,
 - reponse deja au format standard de l'application.
 
-## Etape 5 - Mettre en place la couche exceptions
+### Etape 5 - Mettre en place la couche exceptions
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/exception/BusinessException.java`
 
@@ -163,7 +163,7 @@ public class BusinessException extends RuntimeException {
 
 Explication du code:
 
-- exception metier generic reusable,
+- exception metier generique et reutilisable,
 - transporte le code HTTP et un code d'erreur applicatif.
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/exception/GlobalExceptionHandler.java`
@@ -201,7 +201,7 @@ Explication du code:
 - centralise tous les retours d'erreurs,
 - garantit un format JSON stable pour le frontend.
 
-## Etape 6 - Configurer la securite minimale du chapitre 1
+### Etape 6 - Configurer la securite minimale du chapitre 1
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/config/SecurityConfig.java`
 
@@ -231,7 +231,7 @@ Note d'alignement repository:
 - le code actuel du repository contient deja la version securite JWT stricte du chapitre 3,
 - ce bloc est conserve ici comme etat pedagogique de fin de chapitre 1.
 
-## Etape 7 - Tester rapidement
+### Etape 7 - Tester rapidement
 
 Commandes:
 
@@ -247,7 +247,7 @@ Explication:
 - `test` valide que le socle est stable,
 - `spring-boot:run` + `curl` confirment le comportement reel.
 
-## Etape 8 - Exemple complet fonctionnel (socle chapitre 1)
+### Etape 8 - Exemple complet fonctionnel (socle chapitre 1)
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/controller/HealthController.java`
 
@@ -305,7 +305,7 @@ Explication complete de l'exemple:
 
 ---
 
-## 3.1 Quiz rapide (validation)
+### 3.1 Quiz rapide (validation)
 
 1. Pourquoi separer `controller` et `service` ?
 2. Quel est le role de `@RestControllerAdvice` ?

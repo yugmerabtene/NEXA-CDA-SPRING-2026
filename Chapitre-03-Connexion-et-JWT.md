@@ -21,7 +21,7 @@ Etat du chapitre dans le repository:
 
 ## 2) Theorie detaillee
 
-## 2.1 Pourquoi JWT
+### 2.1 Pourquoi JWT
 
 JWT est adapte a une API REST stateless:
 
@@ -29,7 +29,7 @@ JWT est adapte a une API REST stateless:
 - chaque requete transporte son token,
 - facile a scaler horizontalement.
 
-## 2.2 Pipeline Spring Security avec JWT
+### 2.2 Pipeline Spring Security avec JWT
 
 Pipeline du chapitre:
 
@@ -47,7 +47,7 @@ Mapping direct dans le code:
 - verification bearer token: `authapp-code/src/main/java/com/nexa/cda/authapp/security/JwtAuthenticationFilter.java`
 - regles d'acces HTTP: `authapp-code/src/main/java/com/nexa/cda/authapp/config/SecurityConfig.java`
 
-## 2.3 Separation des couches (important)
+### 2.3 Separation des couches (important)
 
 - `dto` pour `LoginRequestDto`/`LoginResponseDto`/`MeResponseDto`,
 - `service` pour authentifier et generer token,
@@ -58,7 +58,7 @@ Mapping direct dans le code:
 
 ## 3) Pratique step by step
 
-## Etape 1 - Ajouter les dependances JWT
+### Etape 1 - Ajouter les dependances JWT
 
 Fichier: `authapp-code/pom.xml`
 
@@ -74,7 +74,7 @@ Explication:
 - implementation runtime,
 - support JSON des claims.
 
-## Etape 2 - Ajouter les proprietes JWT
+### Etape 2 - Ajouter les proprietes JWT
 
 Fichier: `authapp-code/src/main/resources/application.yml`
 
@@ -92,7 +92,7 @@ Explication:
 - en `dev`, un fallback local est defini dans `application-dev.yml` pour la formation,
 - override possible via variables d'environnement.
 
-## Etape 3 - Construire la couche security
+### Etape 3 - Construire la couche security
 
 Classes ajoutees:
 
@@ -108,7 +108,7 @@ Le role de chaque classe:
 - `JwtAuthenticationFilter`: lit le bearer token sur chaque requete,
 - `SecurityProperties`: injecte la configuration.
 
-## Etape 4 - Durcir `SecurityConfig`
+### Etape 4 - Durcir `SecurityConfig`
 
 `SecurityConfig` a ete mis a jour pour:
 
@@ -121,7 +121,7 @@ Le role de chaque classe:
 - proteger le reste,
 - brancher `JwtAuthenticationFilter`.
 
-## Etape 5 - Ajouter les DTO login
+### Etape 5 - Ajouter les DTO login
 
 Classes ajoutees:
 
@@ -133,7 +133,7 @@ Explication:
 - la couche dto garde un contrat API explicite,
 - facilite l'integration frontend vanilla JS.
 
-## Etape 6 - Ajouter la logique login dans `AuthService`
+### Etape 6 - Ajouter la logique login dans `AuthService`
 
 Flow implemente:
 
@@ -147,14 +147,14 @@ Erreur metier:
 
 - en credentials invalides -> `InvalidCredentialsException` (`401`).
 
-## Etape 7 - Exposer `POST /api/auth/login`
+### Etape 7 - Exposer `POST /api/auth/login`
 
 `AuthController` expose maintenant:
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 
-## Etape 8 - Ajouter endpoint protege `/api/users/me`
+### Etape 8 - Ajouter endpoint protege `/api/users/me`
 
 Classes ajoutees:
 
@@ -164,7 +164,7 @@ Classes ajoutees:
 
 Le controller lit `Authentication`, delegue au service, et renvoie un JSON standard.
 
-## Etape 9 - Frontend impose (HTML/CSS/JS + Bootstrap)
+### Etape 9 - Frontend impose (HTML/CSS/JS + Bootstrap)
 
 Fichiers ajoutes:
 
@@ -184,7 +184,7 @@ Choix securite frontend du cours:
 - il n'est pas persiste en `localStorage` dans ce TP,
 - ce choix limite l'exposition en cas d'attaque XSS persistante.
 
-## Etape 10 - Tester
+### Etape 10 - Tester
 
 Commande:
 
@@ -218,7 +218,7 @@ Exemple de payload JWT (dechiffre):
 }
 ```
 
-## Etape 11 - Exemple complet fonctionnel (SecurityConfig + JwtService)
+### Etape 11 - Exemple complet fonctionnel (SecurityConfig + JwtService)
 
 Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/config/SecurityConfig.java` (extrait central)
 
@@ -271,7 +271,7 @@ Explication complete de l'exemple:
 
 ---
 
-## 3.1 Quiz rapide (validation)
+### 3.1 Quiz rapide (validation)
 
 1. Difference entre `401` et `403` ?
 2. Pourquoi un JWT doit avoir une date d'expiration ?

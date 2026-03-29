@@ -21,7 +21,7 @@ Etat du chapitre dans le repository:
 
 ## 2) Theorie detaillee
 
-## 2.1 Pourquoi tester a plusieurs niveaux
+### 2.1 Pourquoi tester a plusieurs niveaux
 
 Un seul type de test ne suffit pas.
 
@@ -33,7 +33,7 @@ On utilise ici 3 niveaux:
 
 Cette combinaison reduit fortement le risque de regression.
 
-## 2.2 Difference unitaire vs integration
+### 2.2 Difference unitaire vs integration
 
 - Unitaire:
   - mocks,
@@ -44,7 +44,7 @@ Cette combinaison reduit fortement le risque de regression.
   - `MockMvc` simule HTTP,
   - verifie le comportement reel observable.
 
-## 2.3 Ce qu'on veut proteger avant production
+### 2.3 Ce qu'on veut proteger avant production
 
 Dans ce projet, les chemins critiques sont:
 
@@ -53,7 +53,7 @@ Dans ce projet, les chemins critiques sont:
 3. acces a `/api/users/me`,
 4. affichage frontend minimal.
 
-## 2.4 Contexte d'execution des tests
+### 2.4 Contexte d'execution des tests
 
 Le profil de test utilise `application-test.yml`:
 
@@ -67,7 +67,7 @@ Ce choix permet des tests rapides, deterministes et proches du comportement SQL 
 
 ## 3) Pratique step by step
 
-## Etape 1 - Ajouter des tests unitaires sur `AuthService`
+### Etape 1 - Ajouter des tests unitaires sur `AuthService`
 
 Fichier: `authapp-code/src/test/java/com/nexa/cda/authapp/auth/service/AuthServiceUnitTest.java`
 
@@ -89,7 +89,7 @@ Explication:
 
 - on valide le mapping d'une erreur technique de securite vers une erreur metier stable pour l'API.
 
-## Etape 2 - Ajouter des tests unitaires sur `UserService`
+### Etape 2 - Ajouter des tests unitaires sur `UserService`
 
 Fichier: `authapp-code/src/test/java/com/nexa/cda/authapp/user/service/UserServiceUnitTest.java`
 
@@ -102,7 +102,7 @@ Explication:
 
 - cette couche doit rester purement metier, testable sans demarrer tout Spring.
 
-## Etape 3 - Renforcer les tests d'integration security
+### Etape 3 - Renforcer les tests d'integration security
 
 Fichier principal deja present:
 
@@ -118,7 +118,7 @@ Explication:
 
 - c'est le filet de securite principal pour le coeur du projet.
 
-## Etape 4 - Tester la vue frontend Bootstrap
+### Etape 4 - Tester la vue frontend Bootstrap
 
 Fichier ajoute:
 
@@ -135,7 +135,7 @@ Explication:
 
 - ce test confirme que la "view" HTML livree est bien servie et exploitable.
 
-## Etape 5 - Executer toute la suite
+### Etape 5 - Executer toute la suite
 
 Commande:
 
@@ -157,7 +157,7 @@ Attendu:
 - tous les tests passent,
 - pas de regression sur register/login/me/frontend.
 
-## Etape 6 - Exemple complet fonctionnel (test integration securite)
+### Etape 6 - Exemple complet fonctionnel (test integration securite)
 
 Fichier: `authapp-code/src/test/java/com/nexa/cda/authapp/auth/controller/AuthSecurityFlowIntegrationTest.java` (extrait)
 
@@ -211,7 +211,7 @@ Explication complete de l'exemple:
 
 ---
 
-## 3.1 Quiz rapide (validation)
+### 3.1 Quiz rapide (validation)
 
 1. Pourquoi combiner tests unitaires et integration ?
 2. Que valide `FrontendViewIntegrationTest` ?

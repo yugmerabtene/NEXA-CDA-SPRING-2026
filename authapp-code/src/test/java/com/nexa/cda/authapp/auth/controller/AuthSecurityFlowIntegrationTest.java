@@ -197,9 +197,15 @@ class AuthSecurityFlowIntegrationTest {
                 .path("data")
                 .path("token")
                 .asText();
-        char last = token.charAt(token.length() - 1);
-        char replacement = last == 'x' ? 'y' : 'x';
-        String tampered = token.substring(0, token.length() - 1) + replacement;
+        String[] parts = token.split("\\.");
+        String signature = parts[2];
+        int indexToChange = signature.length() / 2;
+        char current = signature.charAt(indexToChange);
+        char replacement = current == 'x' ? 'y' : 'x';
+        String tamperedSignature = signature.substring(0, indexToChange)
+                + replacement
+                + signature.substring(indexToChange + 1);
+        String tampered = parts[0] + "." + parts[1] + "." + tamperedSignature;
 
         mockMvc.perform(get("/api/users/me")
                         .header("Authorization", "Bearer " + tampered))
