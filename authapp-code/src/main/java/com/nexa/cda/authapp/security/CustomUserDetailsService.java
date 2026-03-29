@@ -1,7 +1,7 @@
 package com.nexa.cda.authapp.security;
 
 import com.nexa.cda.authapp.user.model.AppUser;
-import com.nexa.cda.authapp.user.repository.UserRepository;
+import com.nexa.cda.authapp.user.dao.UserDao;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserDao userDao;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        AppUser user = userRepository.findByEmail(email)
+        AppUser user = userDao.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
         return User.withUsername(user.getEmail())

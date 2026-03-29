@@ -119,4 +119,45 @@ class AuthSecurityFlowIntegrationTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").value("INVALID_CREDENTIALS"));
     }
+
+    @Test
+    void shouldRejectMeWhenTokenIsValidButUserWasDeleted() throws Exception {
+        String registerBody = """
+                {
+                  "username": "nexa-user",
+                  "email": "nexa.user@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerBody))
+                .andExpect(status().isCreated());
+
+        String loginBody = """
+                {
+                  "email": "nexa.user@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString())
+                .path("data")
+                .path("token")
+                .asText();
+
+        userRepository.deleteAll();
+
+        mockMvc.perform(get("/api/users/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("UNAUTHORIZED"));
+    }
 }

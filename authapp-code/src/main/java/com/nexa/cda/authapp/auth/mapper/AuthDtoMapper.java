@@ -1,16 +1,16 @@
 package com.nexa.cda.authapp.auth.mapper;
 
-import com.nexa.cda.authapp.auth.view.RegisterRequest;
-import com.nexa.cda.authapp.auth.view.RegisterResponse;
+import com.nexa.cda.authapp.auth.dto.RegisterRequestDto;
+import com.nexa.cda.authapp.auth.dto.RegisterResponseDto;
 import com.nexa.cda.authapp.user.model.AppUser;
 import com.nexa.cda.authapp.user.model.UserRole;
 import java.time.Instant;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthViewMapper {
+public class AuthDtoMapper {
 
-    public AppUser toNewUser(RegisterRequest request, String normalizedEmail, String encodedPassword) {
+    public AppUser toNewUser(RegisterRequestDto request, String normalizedEmail, String encodedPassword) {
         AppUser user = new AppUser();
         user.setUsername(request.username().trim());
         user.setEmail(normalizedEmail);
@@ -20,8 +20,8 @@ public class AuthViewMapper {
         return user;
     }
 
-    public RegisterResponse toRegisterResponse(AppUser user) {
-        return new RegisterResponse(
+    public RegisterResponseDto toRegisterResponse(AppUser user) {
+        return new RegisterResponseDto(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),

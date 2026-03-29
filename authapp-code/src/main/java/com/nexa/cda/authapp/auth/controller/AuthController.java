@@ -1,10 +1,10 @@
 package com.nexa.cda.authapp.auth.controller;
 
 import com.nexa.cda.authapp.auth.service.AuthService;
-import com.nexa.cda.authapp.auth.view.LoginRequest;
-import com.nexa.cda.authapp.auth.view.LoginResponse;
-import com.nexa.cda.authapp.auth.view.RegisterRequest;
-import com.nexa.cda.authapp.auth.view.RegisterResponse;
+import com.nexa.cda.authapp.auth.dto.LoginRequestDto;
+import com.nexa.cda.authapp.auth.dto.LoginResponseDto;
+import com.nexa.cda.authapp.auth.dto.RegisterRequestDto;
+import com.nexa.cda.authapp.auth.dto.RegisterResponseDto;
 import com.nexa.cda.authapp.common.api.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,15 +25,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        RegisterResponse response = authService.register(request);
+    public ResponseEntity<ApiResponse<RegisterResponseDto>> register(@Valid @RequestBody RegisterRequestDto request) {
+        RegisterResponseDto response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("User registered successfully", response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-        LoginResponse response = authService.login(request);
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
+        LoginResponseDto response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
 }

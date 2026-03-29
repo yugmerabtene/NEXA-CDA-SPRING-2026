@@ -1,10 +1,10 @@
-package com.nexa.cda.authapp.auth.view;
+package com.nexa.cda.authapp.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record RegisterRequest(
+public record RegisterRequestDto(
         @NotBlank(message = "username is required")
         @Size(min = 3, max = 100, message = "username must contain between 3 and 100 characters")
         String username,

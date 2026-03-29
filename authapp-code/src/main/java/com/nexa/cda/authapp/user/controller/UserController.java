@@ -1,8 +1,8 @@
 package com.nexa.cda.authapp.user.controller;
 
 import com.nexa.cda.authapp.common.api.ApiResponse;
+import com.nexa.cda.authapp.user.dto.MeResponseDto;
 import com.nexa.cda.authapp.user.service.UserService;
-import com.nexa.cda.authapp.user.view.MeResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +20,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<MeResponse>> me(Authentication authentication) {
-        MeResponse response = userService.getCurrentUser(authentication.getName());
+    public ResponseEntity<ApiResponse<MeResponseDto>> me(Authentication authentication) {
+        MeResponseDto response = userService.getCurrentUser(authentication.getName());
         return ResponseEntity.ok(ApiResponse.success("Current user loaded", response));
     }
 }

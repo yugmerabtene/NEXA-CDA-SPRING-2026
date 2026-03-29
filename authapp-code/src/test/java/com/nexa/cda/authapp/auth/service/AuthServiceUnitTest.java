@@ -6,25 +6,25 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.nexa.cda.authapp.auth.mapper.AuthViewMapper;
-import com.nexa.cda.authapp.auth.view.LoginRequest;
-import com.nexa.cda.authapp.auth.view.LoginResponse;
-import com.nexa.cda.authapp.auth.view.RegisterRequest;
-import com.nexa.cda.authapp.auth.view.RegisterResponse;
+import com.nexa.cda.authapp.auth.dto.LoginRequestDto;
+import com.nexa.cda.authapp.auth.dto.LoginResponseDto;
+import com.nexa.cda.authapp.auth.dto.RegisterRequestDto;
+import com.nexa.cda.authapp.auth.dto.RegisterResponseDto;
+import com.nexa.cda.authapp.auth.mapper.AuthDtoMapper;
 import com.nexa.cda.authapp.common.exception.EmailAlreadyUsedException;
 import com.nexa.cda.authapp.common.exception.InvalidCredentialsException;
 import com.nexa.cda.authapp.security.JwtService;
+import com.nexa.cda.authapp.user.dao.UserDao;
 import com.nexa.cda.authapp.user.model.AppUser;
 import com.nexa.cda.authapp.user.model.UserRole;
-import com.nexa.cda.authapp.user.repository.UserRepository;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,13 +34,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class AuthServiceUnitTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UserDao userDao;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private AuthViewMapper authViewMapper;
+    private AuthDtoMapper authDtoMapper;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -52,14 +52,14 @@ class AuthServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(userRepository, passwordEncoder, authViewMapper, authenticationManager, jwtService);
+        authService = new AuthService(userDao, passwordEncoder, authDtoMapper, authenticationManager, jwtService);
     }
 
     @Test
     void registerShouldPersistMappedUserAndReturnViewResponse() {
-        RegisterRequest request = new RegisterRequest("Nexa", "NEXA@EXAMPLE.COM", "StrongPass123");
+        RegisterRequestDto request = new RegisterRequestDto("Nexa", "NEXA@EXAMPLE.COM", "StrongPass123");
         AppUser mapped = user(1L, "Nexa", "nexa@example.com", "hash", UserRole.USER);
-        RegisterResponse expected = new RegisterResponse(
+        RegisterResponseDto expected = new RegisterResponseDto(
                 1L,
                 "Nexa",
                 "nexa@example.com",
@@ -67,37 +67,49 @@ class AuthServiceUnitTest {
                 Instant.parse("2026-03-29T10:00:00Z")
         );
 
-        when(userRepository.existsByEmail("nexa@example.com")).thenReturn(false);
+        when(userDao.existsByEmail("nexa@example.com")).thenReturn(false);
         when(passwordEncoder.encode("StrongPass123")).thenReturn("hash");
-        when(authViewMapper.toNewUser(request, "nexa@example.com", "hash")).thenReturn(mapped);
-        when(userRepository.save(mapped)).thenReturn(mapped);
-        when(authViewMapper.toRegisterResponse(mapped)).thenReturn(expected);
+        when(authDtoMapper.toNewUser(request, "nexa@example.com", "hash")).thenReturn(mapped);
+        when(userDao.save(mapped)).thenReturn(mapped);
+        when(authDtoMapper.toRegisterResponse(mapped)).thenReturn(expected);
 
-        RegisterResponse response = authService.register(request);
+        RegisterResponseDto response = authService.register(request);
 
         assertEquals(expected, response);
-        ArgumentCaptor<UsernamePasswordAuthenticationToken> tokenCaptor = ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
-        verify(userRepository).save(mapped);
+        verify(userDao).save(mapped);
     }
 
     @Test
     void registerShouldFailWhenEmailAlreadyUsed() {
-        RegisterRequest request = new RegisterRequest("Nexa", "nexa@example.com", "StrongPass123");
-        when(userRepository.existsByEmail("nexa@example.com")).thenReturn(true);
+        RegisterRequestDto request = new RegisterRequestDto("Nexa", "nexa@example.com", "StrongPass123");
+        when(userDao.existsByEmail("nexa@example.com")).thenReturn(true);
+
+        assertThrows(EmailAlreadyUsedException.class, () -> authService.register(request));
+    }
+
+    @Test
+    void registerShouldFailWhenDatabaseUniqueConstraintIsHit() {
+        RegisterRequestDto request = new RegisterRequestDto("Nexa", "nexa@example.com", "StrongPass123");
+        AppUser mapped = user(1L, "Nexa", "nexa@example.com", "hash", UserRole.USER);
+
+        when(userDao.existsByEmail("nexa@example.com")).thenReturn(false);
+        when(passwordEncoder.encode("StrongPass123")).thenReturn("hash");
+        when(authDtoMapper.toNewUser(request, "nexa@example.com", "hash")).thenReturn(mapped);
+        when(userDao.save(mapped)).thenThrow(new DataIntegrityViolationException("duplicate key"));
 
         assertThrows(EmailAlreadyUsedException.class, () -> authService.register(request));
     }
 
     @Test
     void loginShouldReturnTokenWhenCredentialsAreValid() {
-        LoginRequest request = new LoginRequest("nexa@example.com", "StrongPass123");
+        LoginRequestDto request = new LoginRequestDto("nexa@example.com", "StrongPass123");
         AppUser user = user(1L, "Nexa", "nexa@example.com", "hash", UserRole.USER);
 
-        when(userRepository.findByEmail("nexa@example.com")).thenReturn(Optional.of(user));
+        when(userDao.findByEmail("nexa@example.com")).thenReturn(Optional.of(user));
         when(jwtService.generateToken(any(), any())).thenReturn("jwt-token");
         when(jwtService.getExpirationSeconds()).thenReturn(3600L);
 
-        LoginResponse response = authService.login(request);
+        LoginResponseDto response = authService.login(request);
 
         verify(authenticationManager).authenticate(new UsernamePasswordAuthenticationToken("nexa@example.com", "StrongPass123"));
         assertEquals("jwt-token", response.token());
@@ -106,7 +118,7 @@ class AuthServiceUnitTest {
 
     @Test
     void loginShouldFailWhenCredentialsAreInvalid() {
-        LoginRequest request = new LoginRequest("nexa@example.com", "wrong");
+        LoginRequestDto request = new LoginRequestDto("nexa@example.com", "wrong");
         when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("bad credentials"));
 
         assertThrows(InvalidCredentialsException.class, () -> authService.login(request));

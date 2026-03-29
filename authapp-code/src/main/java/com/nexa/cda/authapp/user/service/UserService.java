@@ -1,25 +1,25 @@
 package com.nexa.cda.authapp.user.service;
 
 import com.nexa.cda.authapp.common.exception.UserNotFoundException;
+import com.nexa.cda.authapp.user.dao.UserDao;
+import com.nexa.cda.authapp.user.dto.MeResponseDto;
 import com.nexa.cda.authapp.user.model.AppUser;
-import com.nexa.cda.authapp.user.repository.UserRepository;
-import com.nexa.cda.authapp.user.view.MeResponse;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserDao userDao;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
     }
 
-    public MeResponse getCurrentUser(String email) {
-        AppUser user = userRepository.findByEmail(email)
+    public MeResponseDto getCurrentUser(String email) {
+        AppUser user = userDao.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 
-        return new MeResponse(
+        return new MeResponseDto(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),

@@ -1,8 +1,8 @@
-package com.nexa.cda.authapp.auth.view;
+package com.nexa.cda.authapp.auth.dto;
 
 import java.time.Instant;
 
-public record RegisterResponse(
+public record RegisterResponseDto(
         Long id,
         String username,
         String email,
