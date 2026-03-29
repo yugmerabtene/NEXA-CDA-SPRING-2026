@@ -12,7 +12,7 @@ Application cible: `AuthApp`
 
 - Inscription utilisateur
 - Connexion utilisateur
-- Endpoint protege profil utilisateur (`/me`)
+- Endpoint protege profil utilisateur (`/api/users/me`)
 - Gestion des roles (`USER`, `ADMIN`)
 - Dockerisation complete (`API + PostgreSQL`)
 
@@ -46,6 +46,22 @@ Les chapitres appliquent en continu cette architecture:
 - `common`: reponses API communes, utilitaires transverses
 
 ## Sommaire des 5 jours
+
+## Comment utiliser cette formation
+
+- Lire le chapitre du jour en entier (theorie -> pratique -> quiz)
+- Realiser le TD pour comprendre le design
+- Realiser le TP pour produire le code
+- Verifier la checklist de fin de chapitre
+- Executer les tests avant de passer au chapitre suivant
+
+Prerequis:
+
+- Java 21
+- Maven (ou Maven Wrapper)
+- Docker + Docker Compose
+- IDE Java (IntelliJ, VS Code, Eclipse)
+- Base HTTP/JSON/REST
 
 ### Jour 1 - Fondations Spring Boot et architecture multi-layer
 
@@ -147,6 +163,14 @@ Les chapitres appliquent en continu cette architecture:
 - Tests executes avant chaque livraison de chapitre
 - Commits reguliers, lisibles et orientes valeur
 
+## Definition of Done globale
+
+- Tous les chapitres 1 a 5 sont completes
+- Le flow register -> login -> /api/users/me fonctionne
+- `./mvnw test` est vert
+- `docker compose up -d --build` fonctionne
+- Le frontend HTML/CSS/JS/Bootstrap est exploitable
+
 ## Carte du code (implementation actuelle)
 
 - Inscription/Login API: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/controller/AuthController.java`
@@ -165,3 +189,4 @@ Les chapitres detailles sont disponibles a la racine:
 - `Chapitre-03-Connexion-et-JWT.md`
 - `Chapitre-04-Tests-et-qualite.md`
 - `Chapitre-05-Dockerisation-et-finalisation.md`
+- `Annexe-References-et-glossaire.md`
