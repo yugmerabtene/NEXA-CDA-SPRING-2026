@@ -16,7 +16,7 @@ En fin de chapitre, vous devez avoir:
 
 ---
 
-## 2) Theorie detaillee
+## 2) Theorie 
 
 ## 2.1 Pourquoi Spring Boot
 
