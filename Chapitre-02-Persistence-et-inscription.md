@@ -108,7 +108,7 @@ Explication du code:
 
 - contrainte unique email pour garantir la regle metier,
 - `role` persiste sous forme texte (lisible),
-- `created_at` utile pour audit et traçabilite.
+- `created_at` utile pour audit et tracabilite.
 
 Durcissement SQL ajoute ensuite:
 

@@ -12,7 +12,7 @@ Les patterns `DTO` et `DAO` jouent deux roles differents et complementaires:
 
 ## 2) Pattern DTO (Data Transfer Object)
 
-## 2.1 Definition
+### 2.1 Definition
 
 Un DTO est un objet de transfert de donnees dedie aux echanges entre couches (souvent controller <-> service <-> client HTTP).
 
@@ -29,14 +29,14 @@ Exemples:
 - `LoginResponseDto`
 - `MeResponseDto`
 
-## 2.2 Utilite concrete
+### 2.2 Utilite concrete
 
 - Eviter d'exposer directement les entites JPA (`model`) a l'exterieur.
 - Controler finement ce que le frontend recoit.
 - Attacher les validations d'entree (`@Email`, `@NotBlank`, `@Size`) au contrat API.
 - Stabiliser l'API meme si le schema de base evolue.
 
-## 2.3 Ce que DTO n'est pas
+### 2.3 Ce que DTO n'est pas
 
 - Ce n'est pas une entite persistence.
 - Ce n'est pas un objet metier riche.
@@ -46,7 +46,7 @@ Exemples:
 
 ## 3) Pattern DAO (Data Access Object)
 
-## 3.1 Definition
+### 3.1 Definition
 
 DAO est une abstraction orientee metier pour acceder aux donnees, au-dessus des details de persistence.
 
@@ -56,13 +56,13 @@ Dans ce projet:
 - implementation: `authapp-code/src/main/java/com/nexa/cda/authapp/user/dao/UserDaoJpa.java`
 - support technique: `UserRepository` (Spring Data JPA)
 
-## 3.2 Utilite concrete
+### 3.2 Utilite concrete
 
 - Decoupler la couche service de Spring Data.
 - Faciliter les tests unitaires (mock d'un `UserDao` simple).
 - Remplacer plus facilement l'implementation d'acces aux donnees (JPA, SQL natif, API externe) sans casser le service.
 
-## 3.3 DAO vs Repository
+### 3.3 DAO vs Repository
 
 - `Repository` (Spring Data) = abstraction technique de persistence.
 - `DAO` = abstraction d'acces metier adoptee par l'application.
