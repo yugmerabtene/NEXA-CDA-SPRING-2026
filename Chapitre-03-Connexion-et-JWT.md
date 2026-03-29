@@ -1,0 +1,236 @@
+# Chapitre 03 - Connexion et JWT (Security + View + Frontend Bootstrap)
+
+## 1) Objectif du chapitre
+
+Ce chapitre rend l'application authentifiable et protegee.
+
+Resultat attendu:
+
+- endpoint `POST /api/auth/login` operationnel,
+- token JWT genere et valide,
+- endpoint protege `GET /api/users/me`,
+- frontend HTML/CSS/JavaScript + Bootstrap capable de tester le flow,
+- tests d'integration verts.
+
+---
+
+## 2) Theorie detaillee
+
+## 2.1 Pourquoi JWT
+
+JWT est adapte a une API REST stateless:
+
+- le serveur ne stocke pas de session,
+- chaque requete transporte son token,
+- facile a scaler horizontalement.
+
+## 2.2 Pipeline Spring Security avec JWT
+
+Pipeline du chapitre:
+
+1. `POST /api/auth/login` valide les credentials.
+2. Le backend retourne un JWT signe.
+3. Le frontend stocke ce token en memoire.
+4. Le frontend envoie `Authorization: Bearer <token>`.
+5. `JwtAuthenticationFilter` valide le token et remplit le contexte securite.
+6. Les endpoints proteges deviennent accessibles.
+
+## 2.3 Separation des couches (important)
+
+- `view` pour `LoginRequest`/`LoginResponse`/`MeResponse`,
+- `service` pour authentifier et generer token,
+- `security` pour parser/valider token,
+- `controller` pour exposer l'API.
+
+---
+
+## 3) Pratique step by step
+
+## Etape 1 - Ajouter les dependances JWT
+
+Fichier: `authapp-code/pom.xml`
+
+Dependances ajoutees:
+
+- `jjwt-api`
+- `jjwt-impl`
+- `jjwt-jackson`
+
+Explication:
+
+- API pour coder proprement,
+- implementation runtime,
+- support JSON des claims.
+
+## Etape 2 - Ajouter les proprietes JWT
+
+Fichier: `authapp-code/src/main/resources/application.yml`
+
+```yaml
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:...}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
+```
+
+Explication:
+
+- cle et expiration externalisees,
+- override possible via variables d'environnement.
+
+## Etape 3 - Construire la couche security
+
+Classes ajoutees:
+
+- `SecurityProperties`
+- `JwtService`
+- `CustomUserDetailsService`
+- `JwtAuthenticationFilter`
+
+Le role de chaque classe:
+
+- `JwtService`: genere et valide les tokens,
+- `CustomUserDetailsService`: charge l'utilisateur depuis la base,
+- `JwtAuthenticationFilter`: lit le bearer token sur chaque requete,
+- `SecurityProperties`: injecte la configuration.
+
+## Etape 4 - Durcir `SecurityConfig`
+
+`SecurityConfig` a ete mis a jour pour:
+
+- passer en `STATELESS`,
+- autoriser seulement:
+  - `/api/health`
+  - `/api/auth/register`
+  - `/api/auth/login`
+  - resources frontend (`/`, `/index.html`, `/app.js`, `/app.css`)
+- proteger le reste,
+- brancher `JwtAuthenticationFilter`.
+
+## Etape 5 - Ajouter la vue login
+
+Classes ajoutees:
+
+- `auth/view/LoginRequest`
+- `auth/view/LoginResponse`
+
+Explication:
+
+- la couche view garde un contrat API explicite,
+- facilite l'integration frontend vanilla JS.
+
+## Etape 6 - Ajouter la logique login dans `AuthService`
+
+Flow implemente:
+
+1. normaliser email,
+2. authentifier via `AuthenticationManager`,
+3. charger user,
+4. generer JWT,
+5. retourner `LoginResponse`.
+
+Erreur metier:
+
+- en credentials invalides -> `InvalidCredentialsException` (`401`).
+
+## Etape 7 - Exposer `POST /api/auth/login`
+
+`AuthController` expose maintenant:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+## Etape 8 - Ajouter endpoint protege `/api/users/me`
+
+Classes ajoutees:
+
+- `user/view/MeResponse`
+- `user/service/UserService`
+- `user/controller/UserController`
+
+Le controller lit `Authentication`, delegue au service, et renvoie un JSON standard.
+
+## Etape 9 - Frontend impose (HTML/CSS/JS + Bootstrap)
+
+Fichiers ajoutes:
+
+- `authapp-code/src/main/resources/static/index.html`
+- `authapp-code/src/main/resources/static/app.css`
+- `authapp-code/src/main/resources/static/app.js`
+
+Ce frontend permet:
+
+- inscription,
+- connexion,
+- chargement du profil `/api/users/me` avec token.
+
+## Etape 10 - Tester
+
+Commande:
+
+```bash
+cd authapp-code
+./mvnw test
+```
+
+Tests d'integration verifies:
+
+- register ok,
+- login + token ok,
+- `/api/users/me` protege,
+- login invalide -> `401`.
+
+---
+
+## 4) TD du chapitre 3
+
+### TD-03 - UX de securite cote frontend Bootstrap
+
+Travail demande:
+
+1. Definir les messages UI pour `401` et `403`.
+2. Definir une strategie de stockage token (memoire vs localStorage) et justifier.
+3. Definir un schema de deconnexion simple.
+
+---
+
+## 5) TP du chapitre 3
+
+### TP-03 - Authentification complete et testee
+
+Taches:
+
+1. Ajouter couche security JWT.
+2. Implementer login.
+3. Proteger `/api/users/me`.
+4. Brancher frontend vanilla JS + Bootstrap.
+5. Lancer les tests automatiques.
+
+Definition of Done:
+
+- login retourne un token,
+- `/api/users/me` inaccessible sans token,
+- `/api/users/me` accessible avec token valide,
+- UI de test frontend fonctionnelle,
+- tests verts.
+
+---
+
+## 6) Validation de fin de chapitre
+
+- [ ] JWT genere et valide
+- [ ] `POST /api/auth/login` operationnel
+- [ ] `GET /api/users/me` protege
+- [ ] frontend HTML/CSS/JS + Bootstrap fonctionnel
+- [ ] tests automatises passes
+
+---
+
+## 7) Transition vers le chapitre 4
+
+Le chapitre 4 renforcera la qualite:
+
+- strategie de tests plus large,
+- tests supplementaires de robustesse,
+- securisation des contrats API.
