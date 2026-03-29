@@ -200,6 +200,32 @@ Comportements HTTP importants:
 - endpoint protege sans token: `401` + `UNAUTHORIZED`,
 - endpoint protege avec token invalide: `401` + `UNAUTHORIZED`.
 
+Exemple de payload JWT (dechiffre):
+
+```json
+{
+  "username": "nexa-user",
+  "role": "USER",
+  "sub": "nexa.user@example.com",
+  "iat": 1774800000,
+  "exp": 1774803600
+}
+```
+
+---
+
+## 3.1 Quiz rapide (validation)
+
+1. Difference entre `401` et `403` ?
+2. Pourquoi un JWT doit avoir une date d'expiration ?
+3. Quel composant lit le header `Authorization` dans ce projet ?
+
+Corrige synthese:
+
+- `401`: non authentifie; `403`: authentifie mais non autorise.
+- Limiter la fenetre d'exploitation d'un token vole.
+- `JwtAuthenticationFilter`.
+
 ---
 
 ## 4) TD du chapitre 3

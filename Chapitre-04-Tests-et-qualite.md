@@ -139,11 +139,32 @@ cd authapp-code
 ./mvnw test
 ```
 
+Commandes ciblees pour debug rapide:
+
+```bash
+./mvnw -Dtest=AuthServiceUnitTest test
+./mvnw -Dtest=AuthSecurityFlowIntegrationTest test
+```
+
 Attendu:
 
 - build success,
 - tous les tests passent,
 - pas de regression sur register/login/me/frontend.
+
+---
+
+## 3.1 Quiz rapide (validation)
+
+1. Pourquoi combiner tests unitaires et integration ?
+2. Que valide `FrontendViewIntegrationTest` ?
+3. Quel test protege le flux complet auth securise ?
+
+Corrige synthese:
+
+- Les unitaires isolent la logique; les integrations valident le comportement reel.
+- La disponibilite des ressources frontend critiques (`/index.html`, `/app.js`).
+- `AuthSecurityFlowIntegrationTest`.
 
 ---
 

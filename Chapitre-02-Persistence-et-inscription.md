@@ -294,6 +294,34 @@ cd authapp-code
 ./mvnw test
 ```
 
+Exemples utiles de verification API:
+
+```bash
+# payload invalide -> 400
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"ab","email":"invalid","password":"123"}'
+
+# email deja utilise -> 409
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"nexa","email":"nexa.user@example.com","password":"StrongPass123"}'
+```
+
+---
+
+## 3.1 Quiz rapide (validation)
+
+1. Pourquoi garder `view` et `model` separes ?
+2. Pourquoi avoir a la fois un check `existsByEmail` et une contrainte SQL unique ?
+3. Pourquoi un mot de passe ne doit jamais etre stocke en clair ?
+
+Corrige synthese:
+
+- Eviter d'exposer des champs persistence sensibles au frontend.
+- Le check applicatif donne un message metier clair; la DB garantit l'integrite en dernier rempart.
+- Le hash protege les comptes en cas de fuite de base.
+
 ---
 
 ## 4) TD du chapitre 2

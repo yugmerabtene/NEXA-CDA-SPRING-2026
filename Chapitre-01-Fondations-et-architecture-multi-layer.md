@@ -243,6 +243,20 @@ Explication:
 
 ---
 
+## 3.1 Quiz rapide (validation)
+
+1. Pourquoi separer `controller` et `service` ?
+2. Quel est le role de `@RestControllerAdvice` ?
+3. Pourquoi standardiser les reponses JSON des le chapitre 1 ?
+
+Corrige synthese:
+
+- Separation des couches = code testable, lisible et maintenable.
+- `@RestControllerAdvice` centralise la gestion des erreurs.
+- Un format JSON stable simplifie le frontend et les tests.
+
+---
+
 ## 4) TD du chapitre 1
 
 ### TD-01 - Concevoir les frontieres de couches

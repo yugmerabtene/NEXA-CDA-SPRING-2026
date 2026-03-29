@@ -89,6 +89,16 @@ Table de mapping variables -> configuration Spring:
 - `JWT_SECRET` -> `app.security.jwt.secret` (`application.yml`)
 - `JWT_EXPIRATION_SECONDS` -> `app.security.jwt.expiration-seconds`
 
+Exemple `.env` local (formation):
+
+```env
+DB_URL=jdbc:postgresql://db:5432/authapp
+DB_USERNAME=authapp
+DB_PASSWORD=authapp
+JWT_SECRET=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZg==
+JWT_EXPIRATION_SECONDS=3600
+```
+
 Parametrage:
 
 - `depends_on` avec `condition: service_healthy`,
@@ -162,6 +172,20 @@ Attention securite:
 
 - la valeur de secret JWT fournie dans ce TP est reservee a l'apprentissage local,
 - en environnement reel, utiliser un secret fort et prive, injecte par vault/secret manager.
+
+---
+
+## 3.1 Quiz rapide (validation)
+
+1. Pourquoi utiliser un Dockerfile multi-stage ?
+2. Pourquoi ajouter un healthcheck sur l'application ?
+3. Pourquoi ne jamais commiter un secret de production dans Git ?
+
+Corrige synthese:
+
+- Pour separer build/runtime et reduire la taille/surface d'attaque.
+- Pour detecter rapidement les conteneurs "up mais non prets".
+- Pour eviter fuite de credentials et compromission.
 
 ## Etape 7 - Arret propre
 
