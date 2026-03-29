@@ -34,11 +34,13 @@ Les chapitres appliquent en continu cette architecture:
 
 - `controller`: exposition HTTP/REST
 - `service`: logique metier
+- `dao`: abstraction d'acces metier aux donnees
 - `repository`: acces persistence
 - `model`: objets metier persistants
 - `enum`: types metier fermes (exemple: `UserRole`)
-- `view`: contrats d'entree/sortie pour le frontend (HTML/CSS/JS + Bootstrap)
-- `mapper`: conversion `view <-> model`
+- `dto`: contrats d'entree/sortie API
+- `view`: interface utilisateur frontend (HTML/CSS/JS + Bootstrap)
+- `mapper`: conversion `dto <-> model`
 - `exceptions`: exceptions metier + gestion globale
 - `validation`: regles de validation d'entree
 - `security`: authentification, autorisation, JWT
@@ -190,3 +192,4 @@ Les chapitres detailles sont disponibles a la racine:
 - `Chapitre-04-Tests-et-qualite.md`
 - `Chapitre-05-Dockerisation-et-finalisation.md`
 - `Annexe-References-et-glossaire.md`
+- `Annexe-Design-Patterns-DTO-DAO.md`

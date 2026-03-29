@@ -1,4 +1,4 @@
-# Chapitre 02 - Persistence et inscription (Model + Repository + Service + View)
+# Chapitre 02 - Persistence et inscription (Model + DAO + Repository + Service + DTO)
 
 ## 1) Objectif du chapitre
 
@@ -10,7 +10,7 @@ Resultat attendu:
 - un `enum` metier (`UserRole`),
 - une couche `repository` JPA,
 - une couche `service` metier,
-- une couche `view` API (request/response),
+- une couche `dto` API (request/response),
 - un endpoint `POST /api/auth/register`,
 - des tests automatiques qui valident le flux.
 
@@ -18,18 +18,18 @@ Resultat attendu:
 
 ## 2) Theorie detaillee
 
-## 2.1 Pourquoi separer Model et View
+## 2.1 Pourquoi separer Model et DTO
 
 Dans ce cours, on garde une separation stricte:
 
 - `model`: structure de persistence (base de donnees),
-- `view`: structure exposee a l'exterieur (JSON API).
+- `dto`: structure exposee a l'exterieur (JSON API).
 
 Cette separation est essentielle car:
 
 - la base peut evoluer sans casser le frontend,
 - des champs sensibles (mot de passe) restent internes,
-- les validations d'entree restent dans la couche view/request.
+- les validations d'entree restent dans la couche dto/request.
 
 ## 2.2 Place de l'enum `UserRole`
 
@@ -48,6 +48,21 @@ Le frontend doit recevoir des reponses uniformes:
 - `400` pour payload invalide,
 - `409` pour email deja utilise,
 - format JSON stable pour afficher les messages dans l'UI Bootstrap.
+
+## 2.4 Pattern DAO dans le projet
+
+Ce chapitre introduit aussi le pattern `DAO`.
+
+Principe:
+
+- `Service` depend de `UserDao` (abstraction metier)
+- `UserDaoJpa` delegue a `UserRepository` (implementation technique JPA)
+
+Interet pedagogique:
+
+- isoler le metier des details persistence,
+- simplifier les tests unitaires en mockant `UserDao`,
+- faciliter le remplacement du mecanisme d'acces donnees si besoin.
 
 ---
 
@@ -128,17 +143,17 @@ Explication:
 - `existsByEmail` sert a la regle "email unique" avant insertion,
 - `findByEmail` sera reutilise pour la connexion JWT.
 
-## Etape 5 - Construire la couche View
+## Etape 5 - Construire la couche DTO
 
 Fichiers:
 
-- `authapp-code/src/main/java/com/nexa/cda/authapp/auth/view/RegisterRequest.java`
-- `authapp-code/src/main/java/com/nexa/cda/authapp/auth/view/RegisterResponse.java`
+- `authapp-code/src/main/java/com/nexa/cda/authapp/auth/dto/RegisterRequestDto.java`
+- `authapp-code/src/main/java/com/nexa/cda/authapp/auth/dto/RegisterResponseDto.java`
 
-Extrait `RegisterRequest`:
+Extrait `RegisterRequestDto`:
 
 ```java
-public record RegisterRequest(
+public record RegisterRequestDto(
         @NotBlank(message = "username is required")
         @Size(min = 3, max = 100, message = "username must contain between 3 and 100 characters")
         String username,
@@ -160,14 +175,14 @@ Explication:
 - validations cote backend obligatoires,
 - compatible avec affichage d'erreurs champ par champ sur frontend Bootstrap.
 
-## Etape 6 - Mapper View <-> Model
+## Etape 6 - Mapper DTO <-> Model
 
-Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/mapper/AuthViewMapper.java`
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/mapper/AuthDtoMapper.java`
 
 Le mapper transforme:
 
-- `RegisterRequest` -> `AppUser`
-- `AppUser` -> `RegisterResponse`
+- `RegisterRequestDto` -> `AppUser`
+- `AppUser` -> `RegisterResponseDto`
 
 Explication:
 
@@ -181,16 +196,16 @@ Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/service/AuthServi
 Extrait:
 
 ```java
-public RegisterResponse register(RegisterRequest request) {
+public RegisterResponseDto register(RegisterRequestDto request) {
     String normalizedEmail = normalizeEmail(request.email());
-    if (userRepository.existsByEmail(normalizedEmail)) {
+    if (userDao.existsByEmail(normalizedEmail)) {
         throw new EmailAlreadyUsedException(normalizedEmail);
     }
 
     String encodedPassword = passwordEncoder.encode(request.password());
-    AppUser newUser = authViewMapper.toNewUser(request, normalizedEmail, encodedPassword);
-    AppUser savedUser = userRepository.save(newUser);
-    return authViewMapper.toRegisterResponse(savedUser);
+    AppUser newUser = authDtoMapper.toNewUser(request, normalizedEmail, encodedPassword);
+    AppUser savedUser = userDao.save(newUser);
+    return authDtoMapper.toRegisterResponse(savedUser);
 }
 ```
 
@@ -208,8 +223,8 @@ Extrait:
 
 ```java
 @PostMapping("/register")
-public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
-    RegisterResponse response = authService.register(request);
+public ResponseEntity<ApiResponse<RegisterResponseDto>> register(@Valid @RequestBody RegisterRequestDto request) {
+    RegisterResponseDto response = authService.register(request);
     return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success("User registered successfully", response));
 }
@@ -312,7 +327,7 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 ## 3.1 Quiz rapide (validation)
 
-1. Pourquoi garder `view` et `model` separes ?
+1. Pourquoi garder `dto` et `model` separes ?
 2. Pourquoi avoir a la fois un check `existsByEmail` et une contrainte SQL unique ?
 3. Pourquoi un mot de passe ne doit jamais etre stocke en clair ?
 
@@ -347,12 +362,13 @@ Livrable:
 Taches:
 
 1. Creer `AppUser`, `UserRole`, `UserRepository`.
-2. Creer `RegisterRequest`/`RegisterResponse` dans la couche `view`.
-3. Ajouter mapper `AuthViewMapper`.
-4. Ajouter service `AuthService`.
-5. Ajouter controller `AuthController`.
-6. Ajouter exception `EmailAlreadyUsedException`.
-7. Ecrire/valider les tests d'integration.
+2. Creer `UserDao` et `UserDaoJpa`.
+3. Creer `RegisterRequestDto`/`RegisterResponseDto` dans la couche `dto`.
+4. Ajouter mapper `AuthDtoMapper`.
+5. Ajouter service `AuthService` (dependance `UserDao`).
+6. Ajouter controller `AuthController`.
+7. Ajouter exception `EmailAlreadyUsedException`.
+8. Ecrire/valider les tests d'integration.
 
 Definition of Done:
 

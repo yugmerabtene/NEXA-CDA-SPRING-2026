@@ -37,10 +37,11 @@ Architecture cible du projet:
 
 - `controller`: recoit les requetes HTTP et retourne des reponses HTTP,
 - `service`: contient la logique metier,
+- `dao`: abstraction d'acces metier aux donnees (introduite au chapitre 2),
 - `repository`: dialogue avec la base,
 - `model`: represente les objets persistants,
-- `view`: definit les contrats d'entree/sortie API,
-- `mapper`: convertit `view <-> model`,
+- `dto`: definit les contrats d'entree/sortie API,
+- `mapper`: convertit `dto <-> model`,
 - `exceptions`: porte les erreurs metier + la gestion globale,
 - `config`: centralise les configurations transverses,
 - `common`: composants partages (reponse standard, utilitaires).

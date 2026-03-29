@@ -44,7 +44,7 @@ Mapping direct dans le code:
 
 ## 2.3 Separation des couches (important)
 
-- `view` pour `LoginRequest`/`LoginResponse`/`MeResponse`,
+- `dto` pour `LoginRequestDto`/`LoginResponseDto`/`MeResponseDto`,
 - `service` pour authentifier et generer token,
 - `security` pour parser/valider token,
 - `controller` pour exposer l'API.
@@ -115,16 +115,16 @@ Le role de chaque classe:
 - proteger le reste,
 - brancher `JwtAuthenticationFilter`.
 
-## Etape 5 - Ajouter la vue login
+## Etape 5 - Ajouter les DTO login
 
 Classes ajoutees:
 
-- `auth/view/LoginRequest`
-- `auth/view/LoginResponse`
+- `auth/dto/LoginRequestDto`
+- `auth/dto/LoginResponseDto`
 
 Explication:
 
-- la couche view garde un contrat API explicite,
+- la couche dto garde un contrat API explicite,
 - facilite l'integration frontend vanilla JS.
 
 ## Etape 6 - Ajouter la logique login dans `AuthService`
@@ -135,7 +135,7 @@ Flow implemente:
 2. authentifier via `AuthenticationManager`,
 3. charger user,
 4. generer JWT,
-5. retourner `LoginResponse`.
+5. retourner `LoginResponseDto`.
 
 Erreur metier:
 
@@ -152,7 +152,7 @@ Erreur metier:
 
 Classes ajoutees:
 
-- `user/view/MeResponse`
+- `user/dto/MeResponseDto`
 - `user/service/UserService`
 - `user/controller/UserController`
 

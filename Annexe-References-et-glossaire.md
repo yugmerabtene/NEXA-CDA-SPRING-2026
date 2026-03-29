@@ -45,10 +45,12 @@
 
 - `Controller`: point d'entree HTTP/REST.
 - `Service`: logique metier.
+- `DAO`: couche d'abstraction d'acces metier aux donnees.
 - `Repository`: acces base de donnees.
 - `Model`: objet metier persiste (entite JPA).
-- `View`: contrat d'entree/sortie API (request/response JSON).
-- `Mapper`: conversion entre view et model.
+- `DTO`: contrat d'entree/sortie API (request/response JSON).
+- `View`: interface utilisateur (HTML/CSS/JavaScript).
+- `Mapper`: conversion entre dto et model.
 - `JWT`: token signe pour authentifier des appels API stateless.
 - `401`: non authentifie.
 - `403`: authentifie mais non autorise.
