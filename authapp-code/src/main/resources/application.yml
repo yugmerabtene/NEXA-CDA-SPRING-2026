@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: authapp-code
+  profiles:
+    default: dev
+
+server:
+  port: 8080
