@@ -1,0 +1,12 @@
+body {
+  background: radial-gradient(circle at top, #f8fafc, #e2e8f0 60%, #cbd5e1);
+  min-height: 100vh;
+}
+
+pre {
+  background: #0f172a;
+  color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  white-space: pre-wrap;
+}

@@ -1,6 +1,8 @@
 package com.nexa.cda.authapp.auth.controller;
 
 import com.nexa.cda.authapp.auth.service.AuthService;
+import com.nexa.cda.authapp.auth.view.LoginRequest;
+import com.nexa.cda.authapp.auth.view.LoginResponse;
 import com.nexa.cda.authapp.auth.view.RegisterRequest;
 import com.nexa.cda.authapp.auth.view.RegisterResponse;
 import com.nexa.cda.authapp.common.api.ApiResponse;
@@ -27,5 +29,11 @@ public class AuthController {
         RegisterResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("User registered successfully", response));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
 }
