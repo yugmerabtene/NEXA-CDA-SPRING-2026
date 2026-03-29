@@ -88,4 +88,20 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"))
                 .andExpect(jsonPath("$.errors").isArray());
     }
+
+    @Test
+    void shouldReturnValidationErrorForInvalidLoginPayload() throws Exception {
+        String body = """
+                {
+                  "email": "invalid",
+                  "password": ""
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"));
+    }
 }

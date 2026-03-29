@@ -8,3 +8,10 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+
+app:
+  security:
+    jwt:
+      # Training fallback for local development only.
+      secret: ${JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZg==}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}

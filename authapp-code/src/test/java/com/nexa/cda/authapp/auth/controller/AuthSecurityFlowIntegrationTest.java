@@ -79,7 +79,16 @@ class AuthSecurityFlowIntegrationTest {
     @Test
     void shouldRejectMeWhenNoTokenProvided() throws Exception {
         mockMvc.perform(get("/api/users/me"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("UNAUTHORIZED"));
+    }
+
+    @Test
+    void shouldRejectMeWhenTokenIsMalformed() throws Exception {
+        mockMvc.perform(get("/api/users/me")
+                        .header("Authorization", "Bearer invalid-token"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("UNAUTHORIZED"));
     }
 
     @Test

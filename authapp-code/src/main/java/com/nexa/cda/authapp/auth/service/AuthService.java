@@ -11,6 +11,7 @@ import com.nexa.cda.authapp.security.JwtService;
 import com.nexa.cda.authapp.user.model.AppUser;
 import com.nexa.cda.authapp.user.repository.UserRepository;
 import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,7 +49,12 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.password());
         AppUser newUser = authViewMapper.toNewUser(request, normalizedEmail, encodedPassword);
-        AppUser savedUser = userRepository.save(newUser);
+        AppUser savedUser;
+        try {
+            savedUser = userRepository.save(newUser);
+        } catch (DataIntegrityViolationException ex) {
+            throw new EmailAlreadyUsedException(normalizedEmail);
+        }
         return authViewMapper.toRegisterResponse(savedUser);
     }
 
