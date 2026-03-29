@@ -333,6 +333,82 @@ curl -X POST http://localhost:8080/api/auth/register \
   -d '{"username":"nexa","email":"nexa.user@example.com","password":"StrongPass123"}'
 ```
 
+## Etape 11 - Exemple complet fonctionnel (DAO + DTO + Service)
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/user/dao/UserDao.java`
+
+```java
+public interface UserDao {
+
+    boolean existsByEmail(String email); // Regle metier d'unicite
+
+    Optional<AppUser> findByEmail(String email); // Reutilisable pour login
+
+    AppUser save(AppUser user); // Point central de persistence metier
+}
+```
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/user/dao/UserDaoJpa.java`
+
+```java
+@Component // Adapter technique JPA derriere l'interface metier UserDao
+public class UserDaoJpa implements UserDao {
+
+    private final UserRepository userRepository;
+
+    public UserDaoJpa(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Optional<AppUser> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public AppUser save(AppUser user) {
+        return userRepository.save(user);
+    }
+}
+```
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/service/AuthService.java` (partie register)
+
+```java
+@Transactional // Ecriture atomique pour l'inscription
+public RegisterResponseDto register(RegisterRequestDto request) {
+    String normalizedEmail = normalizeEmail(request.email()); // trim + lowercase
+    if (userDao.existsByEmail(normalizedEmail)) {
+        throw new EmailAlreadyUsedException(normalizedEmail); // 409 metier
+    }
+
+    String encodedPassword = passwordEncoder.encode(request.password()); // Jamais en clair
+    AppUser newUser = authDtoMapper.toNewUser(request, normalizedEmail, encodedPassword);
+
+    AppUser savedUser;
+    try {
+        savedUser = userDao.save(newUser);
+    } catch (DataIntegrityViolationException ex) {
+        // Protection en concurrence si deux requetes passent le pre-check
+        throw new EmailAlreadyUsedException(normalizedEmail);
+    }
+
+    return authDtoMapper.toRegisterResponse(savedUser); // Contrat DTO de sortie
+}
+```
+
+Explication complete de l'exemple:
+
+- `DTO` porte validation et contrat HTTP.
+- `DAO` decouple le service des details Spring Data.
+- `Service` applique les regles metier (unicite + hash + mapping).
+- `@Transactional` garantit un comportement coherent sur l'operation d'inscription.
+
 ---
 
 ## 3.1 Quiz rapide (validation)

@@ -130,6 +130,72 @@ Explication:
 - `--build` force la reconstruction de l'image,
 - `ps` valide l'etat des conteneurs.
 
+## Etape 4.1 - Exemple complet fonctionnel (Dockerfile + Compose)
+
+Fichier: `authapp-code/Dockerfile`
+
+```dockerfile
+# Build stage: compile le projet dans une image JDK
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /workspace
+
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw -q -DskipTests dependency:go-offline
+
+COPY src src
+RUN ./mvnw -q -DskipTests package
+
+# Runtime stage: image plus legere pour execution
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+# User non-root pour reduire la surface d'attaque
+RUN useradd --create-home --uid 10001 appuser
+
+COPY --from=build /workspace/target/*.jar app.jar
+
+EXPOSE 8080
+USER appuser
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+```
+
+Fichier: `authapp-code/docker-compose.yml` (extrait)
+
+```yaml
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: authapp
+      POSTGRES_USER: authapp
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-authapp}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authapp -d authapp"]
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: ${DB_URL:-jdbc:postgresql://db:5432/authapp}
+      DB_USERNAME: ${DB_USERNAME:-authapp}
+      DB_PASSWORD: ${DB_PASSWORD:-authapp}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      JWT_EXPIRATION_SECONDS: ${JWT_EXPIRATION_SECONDS:-3600}
+    ports:
+      - "8080:8080"
+```
+
+Explication complete de l'exemple:
+
+- Le build multi-stage produit une image runtime plus propre.
+- Le conteneur applicatif n'est pas root.
+- Compose attend une DB prete avant de lancer l'API.
+- `JWT_SECRET` est obligatoire en compose, ce qui evite les runs non securises.
+
 ## Etape 5 - Verifier l'API dockerisee
 
 Commandes:

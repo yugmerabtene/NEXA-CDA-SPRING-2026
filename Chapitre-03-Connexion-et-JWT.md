@@ -218,6 +218,57 @@ Exemple de payload JWT (dechiffre):
 }
 ```
 
+## Etape 11 - Exemple complet fonctionnel (SecurityConfig + JwtService)
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/config/SecurityConfig.java` (extrait central)
+
+```java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            .csrf(csrf -> csrf.disable()) // API stateless, pas de formulaire serveur
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(restAuthenticationEntryPoint) // Reponse JSON 401
+                    .accessDeniedHandler(restAccessDeniedHandler)) // Reponse JSON 403
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/", "/index.html", "/app.js", "/app.css", "/api/health", "/api/auth/register", "/api/auth/login").permitAll()
+                    .anyRequest().authenticated()) // Tout le reste est protege
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
+```
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/security/JwtService.java` (extrait central)
+
+```java
+public String generateToken(String subject, Map<String, Object> extraClaims) {
+    Instant now = Instant.now();
+    Instant expiresAt = now.plusSeconds(properties.getExpirationSeconds());
+
+    return Jwts.builder()
+            .claims(extraClaims) // role + username
+            .subject(subject) // email utilisateur
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(expiresAt)) // expiration obligatoire
+            .signWith(signingKey()) // Signature HMAC avec secret env
+            .compact();
+}
+
+public boolean isTokenValid(String token, String expectedSubject) {
+    Claims claims = extractClaims(token);
+    return expectedSubject.equals(claims.getSubject()) && claims.getExpiration().after(new Date());
+}
+```
+
+Explication complete de l'exemple:
+
+- `SecurityConfig` definit clairement routes publiques et routes protegees.
+- `JwtService` encapsule generation et validation pour eviter la duplication.
+- Le couple filtre + service JWT garantit une authentification stateless robuste.
+
 ---
 
 ## 3.1 Quiz rapide (validation)

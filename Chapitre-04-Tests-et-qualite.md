@@ -157,6 +157,58 @@ Attendu:
 - tous les tests passent,
 - pas de regression sur register/login/me/frontend.
 
+## Etape 6 - Exemple complet fonctionnel (test integration securite)
+
+Fichier: `authapp-code/src/test/java/com/nexa/cda/authapp/auth/controller/AuthSecurityFlowIntegrationTest.java` (extrait)
+
+```java
+@Test
+void shouldLoginAndAccessMeWithJwtToken() throws Exception {
+    String registerBody = """
+            {
+              "username": "nexa-user",
+              "email": "nexa.user@example.com",
+              "password": "StrongPass123"
+            }
+            """;
+
+    mockMvc.perform(post("/api/auth/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(registerBody))
+            .andExpect(status().isCreated());
+
+    String loginBody = """
+            {
+              "email": "nexa.user@example.com",
+              "password": "StrongPass123"
+            }
+            """;
+
+    MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(loginBody))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.token").isNotEmpty())
+            .andReturn();
+
+    String token = objectMapper.readTree(loginResult.getResponse().getContentAsString())
+            .path("data")
+            .path("token")
+            .asText();
+
+    mockMvc.perform(get("/api/users/me")
+                    .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.email").value("nexa.user@example.com"));
+}
+```
+
+Explication complete de l'exemple:
+
+- Le test valide le parcours utilisateur reel de bout en bout.
+- Il couvre creation compte, authentification, puis acces endpoint protege.
+- Il verifie le contrat JSON et la securite dans le meme scenario.
+
 ---
 
 ## 3.1 Quiz rapide (validation)

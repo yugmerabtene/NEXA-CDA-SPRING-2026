@@ -247,6 +247,62 @@ Explication:
 - `test` valide que le socle est stable,
 - `spring-boot:run` + `curl` confirment le comportement reel.
 
+## Etape 8 - Exemple complet fonctionnel (socle chapitre 1)
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/controller/HealthController.java`
+
+```java
+@RestController // Expose une API REST JSON
+@RequestMapping("/api") // Prefixe commun des endpoints techniques
+public class HealthController {
+
+    @GetMapping("/health") // Endpoint GET /api/health
+    public ResponseEntity<ApiResponse<Map<String, String>>> health() {
+        // Retour standardise avec message + data
+        return ResponseEntity.ok(ApiResponse.success("Service operational", Map.of("status", "UP")));
+    }
+}
+```
+
+Fichier: `authapp-code/src/main/java/com/nexa/cda/authapp/common/exception/GlobalExceptionHandler.java`
+
+```java
+@RestControllerAdvice // Intercepte les exceptions de tous les controllers
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiErrorResponse> handleBusiness(BusinessException ex) {
+        // Convertit une erreur metier en reponse JSON propre
+        ApiErrorResponse response = new ApiErrorResponse(
+                Instant.now(),
+                ex.getMessage(),
+                ex.getCode().name(),
+                List.of()
+        );
+        return ResponseEntity.status(ex.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex) {
+        // Evite de renvoyer la stack trace au client
+        ApiErrorResponse response = new ApiErrorResponse(
+                Instant.now(),
+                "Unexpected error",
+                ErrorCode.INTERNAL_ERROR.name(),
+                List.of()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+}
+```
+
+Explication complete de l'exemple:
+
+- `HealthController` valide le flux HTTP minimal du projet.
+- `ApiResponse` impose un contrat stable des reponses de succes.
+- `GlobalExceptionHandler` impose un contrat stable des erreurs.
+- Ce duo est la base de tous les chapitres suivants (register/login/tests/docker).
+
 ---
 
 ## 3.1 Quiz rapide (validation)
