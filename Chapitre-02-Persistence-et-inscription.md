@@ -232,6 +232,51 @@ But:
 
 - front vanilla JS + Bootstrap peut afficher des messages stables sans logique complexe.
 
+## Etape 9.1 - Contrats JSON de reference (a afficher cote frontend)
+
+Succes `201`:
+
+```json
+{
+  "timestamp": "2026-03-29T17:00:00Z",
+  "message": "User registered successfully",
+  "data": {
+    "id": 12,
+    "username": "nexa-user",
+    "email": "nexa.user@example.com",
+    "role": "USER",
+    "createdAt": "2026-03-29T17:00:00Z"
+  }
+}
+```
+
+Erreur metier `409`:
+
+```json
+{
+  "timestamp": "2026-03-29T17:00:05Z",
+  "message": "Email already used: nexa.user@example.com",
+  "errorCode": "EMAIL_ALREADY_USED",
+  "errors": []
+}
+```
+
+Erreur validation `400`:
+
+```json
+{
+  "timestamp": "2026-03-29T17:00:08Z",
+  "message": "Validation failed",
+  "errorCode": "VALIDATION_ERROR",
+  "errors": [
+    {
+      "field": "email",
+      "message": "email must be valid"
+    }
+  ]
+}
+```
+
 ## Etape 10 - Tester le flux
 
 Test integration: `authapp-code/src/test/java/com/nexa/cda/authapp/auth/controller/AuthControllerIntegrationTest.java`

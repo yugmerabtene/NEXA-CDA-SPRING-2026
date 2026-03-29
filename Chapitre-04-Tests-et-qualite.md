@@ -48,6 +48,16 @@ Dans ce projet, les chemins critiques sont:
 3. acces a `/api/users/me`,
 4. affichage frontend minimal.
 
+## 2.4 Contexte d'execution des tests
+
+Le profil de test utilise `application-test.yml`:
+
+- H2 en mode PostgreSQL,
+- migrations Flyway executees,
+- secret JWT de test fixe.
+
+Ce choix permet des tests rapides, deterministes et proches du comportement SQL cible.
+
 ---
 
 ## 3) Pratique step by step
@@ -111,9 +121,10 @@ Fichier ajoute:
 
 Ce test verifie:
 
-- `GET /` retourne `200`,
+- `GET /index.html` retourne `200`,
 - la page contient Bootstrap CDN,
-- le formulaire d'inscription est present.
+- le formulaire d'inscription est present,
+- `GET /app.js` est bien servi.
 
 Explication:
 
@@ -149,6 +160,13 @@ Travail demande:
 Livrable:
 
 - matrice de tests priorisee.
+
+Matrice risque -> test existant:
+
+- risque "auth casse": `AuthSecurityFlowIntegrationTest`
+- risque "contrat register/login": `AuthControllerIntegrationTest`
+- risque "regles metier service": `AuthServiceUnitTest`, `UserServiceUnitTest`
+- risque "vue indisponible": `FrontendViewIntegrationTest`
 
 ---
 

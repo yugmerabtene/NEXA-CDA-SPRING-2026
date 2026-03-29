@@ -35,6 +35,13 @@ Pipeline du chapitre:
 5. `JwtAuthenticationFilter` valide le token et remplit le contexte securite.
 6. Les endpoints proteges deviennent accessibles.
 
+Mapping direct dans le code:
+
+- authentification login: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/service/AuthService.java`
+- generation token: `authapp-code/src/main/java/com/nexa/cda/authapp/security/JwtService.java`
+- verification bearer token: `authapp-code/src/main/java/com/nexa/cda/authapp/security/JwtAuthenticationFilter.java`
+- regles d'acces HTTP: `authapp-code/src/main/java/com/nexa/cda/authapp/config/SecurityConfig.java`
+
 ## 2.3 Separation des couches (important)
 
 - `view` pour `LoginRequest`/`LoginResponse`/`MeResponse`,
@@ -165,6 +172,12 @@ Ce frontend permet:
 - connexion,
 - chargement du profil `/api/users/me` avec token.
 
+Choix securite frontend du cours:
+
+- le token est garde en memoire JavaScript (`let accessToken = null`),
+- il n'est pas persiste en `localStorage` dans ce TP,
+- ce choix limite l'exposition en cas d'attaque XSS persistante.
+
 ## Etape 10 - Tester
 
 Commande:
@@ -180,6 +193,12 @@ Tests d'integration verifies:
 - login + token ok,
 - `/api/users/me` protege,
 - login invalide -> `401`.
+
+Comportements HTTP importants:
+
+- login invalide: `401` + `INVALID_CREDENTIALS`,
+- endpoint protege sans token: `401` + `UNAUTHORIZED`,
+- endpoint protege avec token invalide: `401` + `UNAUTHORIZED`.
 
 ---
 

@@ -39,8 +39,8 @@ Architecture cible du projet:
 - `service`: contient la logique metier,
 - `repository`: dialogue avec la base,
 - `model`: represente les objets persistants,
-- `dto`: definit les contrats d'entree/sortie API,
-- `mapper`: convertit `dto <-> model`,
+- `view`: definit les contrats d'entree/sortie API,
+- `mapper`: convertit `view <-> model`,
 - `exceptions`: porte les erreurs metier + la gestion globale,
 - `config`: centralise les configurations transverses,
 - `common`: composants partages (reponse standard, utilitaires).
@@ -171,7 +171,8 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 Instant.now(),
                 ex.getMessage(),
-                ex.getCode().name()
+                ex.getCode().name(),
+                List.of()
         );
         return ResponseEntity.status(ex.getStatus()).body(response);
     }
@@ -181,7 +182,8 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 Instant.now(),
                 "Unexpected error",
-                ErrorCode.INTERNAL_ERROR.name()
+                ErrorCode.INTERNAL_ERROR.name(),
+                List.of()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -217,6 +219,11 @@ Explication du code:
 
 - en chapitre 1, on ouvre les routes pour accelerer la mise en place,
 - la securite JWT stricte sera introduite en chapitre 3.
+
+Note d'alignement repository:
+
+- le code actuel du repository contient deja la version securite JWT stricte du chapitre 3,
+- ce bloc est conserve ici comme etat pedagogique de fin de chapitre 1.
 
 ## Etape 7 - Tester rapidement
 

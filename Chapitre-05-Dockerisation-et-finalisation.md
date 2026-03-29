@@ -81,6 +81,14 @@ Services:
 - `db`: PostgreSQL 16
 - `app`: API Spring Boot
 
+Table de mapping variables -> configuration Spring:
+
+- `DB_URL` -> `spring.datasource.url` (`application-dev.yml`)
+- `DB_USERNAME` -> `spring.datasource.username`
+- `DB_PASSWORD` -> `spring.datasource.password`
+- `JWT_SECRET` -> `app.security.jwt.secret` (`application.yml`)
+- `JWT_EXPIRATION_SECONDS` -> `app.security.jwt.expiration-seconds`
+
 Parametrage:
 
 - `depends_on` avec `condition: service_healthy`,
@@ -117,6 +125,24 @@ Puis verification du flow complet:
 2. login,
 3. appel `/api/users/me` avec bearer token.
 
+Exemple complet:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"docker-user","email":"docker.user@example.com","password":"StrongPass123"}'
+
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"docker.user@example.com","password":"StrongPass123"}'
+```
+
+Puis reutiliser `data.token` pour appeler:
+
+```bash
+curl http://localhost:8080/api/users/me -H "Authorization: Bearer <TOKEN>"
+```
+
 ## Etape 6 - Verifier la vue frontend
 
 La page est servie depuis `src/main/resources/static`.
@@ -131,6 +157,11 @@ Frontend impose respecte:
 - CSS,
 - JavaScript vanilla,
 - Bootstrap CDN.
+
+Attention securite:
+
+- la valeur de secret JWT fournie dans ce TP est reservee a l'apprentissage local,
+- en environnement reel, utiliser un secret fort et prive, injecte par vault/secret manager.
 
 ## Etape 7 - Arret propre
 

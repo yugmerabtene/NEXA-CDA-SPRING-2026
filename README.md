@@ -37,9 +37,8 @@ Les chapitres appliquent en continu cette architecture:
 - `repository`: acces persistence
 - `model`: objets metier persistants
 - `enum`: types metier fermes (exemple: `UserRole`)
-- `dto`: contrats entree/sortie API
 - `view`: contrats d'entree/sortie pour le frontend (HTML/CSS/JS + Bootstrap)
-- `mapper`: conversion `dto <-> model`
+- `mapper`: conversion `view <-> model`
 - `exceptions`: exceptions metier + gestion globale
 - `validation`: regles de validation d'entree
 - `security`: authentification, autorisation, JWT
@@ -148,9 +147,18 @@ Les chapitres appliquent en continu cette architecture:
 - Tests executes avant chaque livraison de chapitre
 - Commits reguliers, lisibles et orientes valeur
 
-## Suite du repository
+## Carte du code (implementation actuelle)
 
-Les chapitres detailles seront ajoutes en fichiers a la racine:
+- Inscription/Login API: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/controller/AuthController.java`
+- Logique metier auth: `authapp-code/src/main/java/com/nexa/cda/authapp/auth/service/AuthService.java`
+- JWT et filtre securite: `authapp-code/src/main/java/com/nexa/cda/authapp/security/JwtService.java`, `authapp-code/src/main/java/com/nexa/cda/authapp/security/JwtAuthenticationFilter.java`
+- Endpoint protege profil: `authapp-code/src/main/java/com/nexa/cda/authapp/user/controller/UserController.java`
+- Frontend impose (HTML/CSS/JS/Bootstrap): `authapp-code/src/main/resources/static/index.html`, `authapp-code/src/main/resources/static/app.js`, `authapp-code/src/main/resources/static/app.css`
+- Docker: `authapp-code/Dockerfile`, `authapp-code/docker-compose.yml`
+
+## Chapitres disponibles
+
+Les chapitres detailles sont disponibles a la racine:
 
 - `Chapitre-01-Fondations-et-architecture-multi-layer.md`
 - `Chapitre-02-Persistence-et-inscription.md`
