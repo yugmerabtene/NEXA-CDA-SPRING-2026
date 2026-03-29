@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/authapp}
+    username: ${DB_USERNAME:authapp}
+    password: ${DB_PASSWORD:authapp}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
