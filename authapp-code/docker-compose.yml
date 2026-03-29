@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    container_name: nexa-cda-db
+    environment:
+      POSTGRES_DB: authapp
+      POSTGRES_USER: authapp
+      POSTGRES_PASSWORD: authapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - authapp_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authapp -d authapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    container_name: nexa-cda-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://db:5432/authapp
+      DB_USERNAME: authapp
+      DB_PASSWORD: authapp
+      JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZg==
+      JWT_EXPIRATION_SECONDS: 3600
+    ports:
+      - "8080:8080"
+
+volumes:
+  authapp_db_data:
