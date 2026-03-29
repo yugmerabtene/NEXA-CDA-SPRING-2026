@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.nexa.cda.authapp.user.model.AppUser;
 import com.nexa.cda.authapp.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,36 @@ class AuthControllerIntegrationTest {
     }
 
     @Test
+    void shouldReturnConflictWhenEmailAlreadyExistsIgnoringCase() throws Exception {
+        String firstBody = """
+                {
+                  "username": "nexa-user",
+                  "email": "duplicate@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        String secondBody = """
+                {
+                  "username": "nexa-user-2",
+                  "email": "DUPLICATE@EXAMPLE.COM",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(firstBody))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(secondBody))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.errorCode").value("EMAIL_ALREADY_USED"));
+    }
+
+    @Test
     void shouldReturnValidationErrorForInvalidPayload() throws Exception {
         String body = """
                 {
@@ -121,5 +152,26 @@ class AuthControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.username").value("nexa-user"))
                 .andExpect(jsonPath("$.data.email").value("nexa.user@example.com"));
+    }
+
+    @Test
+    void shouldStoreHashedPasswordInDatabase() throws Exception {
+        String rawPassword = "StrongPass123";
+        String body = """
+                {
+                  "username": "hash-check",
+                  "email": "hash.check@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated());
+
+        AppUser user = userRepository.findByEmail("hash.check@example.com").orElseThrow();
+        org.junit.jupiter.api.Assertions.assertNotEquals(rawPassword, user.getPassword());
+        org.junit.jupiter.api.Assertions.assertTrue(user.getPassword().startsWith("$2"));
     }
 }

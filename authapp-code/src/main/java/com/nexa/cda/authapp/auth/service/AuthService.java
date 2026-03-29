@@ -17,6 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -41,6 +42,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
+    @Transactional
     public RegisterResponseDto register(RegisterRequestDto request) {
         String normalizedEmail = normalizeEmail(request.email());
         if (userDao.existsByEmail(normalizedEmail)) {
@@ -58,6 +60,7 @@ public class AuthService {
         return authDtoMapper.toRegisterResponse(savedUser);
     }
 
+    @Transactional(readOnly = true)
     public LoginResponseDto login(LoginRequestDto request) {
         String normalizedEmail = normalizeEmail(request.email());
 

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.nexa.cda.authapp.common.exception.UserNotFoundException;
 import com.nexa.cda.authapp.user.dao.UserDao;
 import com.nexa.cda.authapp.user.dto.MeResponseDto;
+import com.nexa.cda.authapp.user.mapper.UserDtoMapper;
 import com.nexa.cda.authapp.user.model.AppUser;
 import com.nexa.cda.authapp.user.model.UserRole;
 import java.time.Instant;
@@ -23,11 +24,14 @@ class UserServiceUnitTest {
     @Mock
     private UserDao userDao;
 
+    private UserDtoMapper userDtoMapper;
+
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userDao);
+        userDtoMapper = new UserDtoMapper();
+        userService = new UserService(userDao, userDtoMapper);
     }
 
     @Test

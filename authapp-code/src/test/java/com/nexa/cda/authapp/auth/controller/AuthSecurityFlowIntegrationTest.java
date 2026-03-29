@@ -121,6 +121,93 @@ class AuthSecurityFlowIntegrationTest {
     }
 
     @Test
+    void shouldRejectLoginWhenEmailDoesNotExist() throws Exception {
+        String loginBody = """
+                {
+                  "email": "missing@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginBody))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("INVALID_CREDENTIALS"));
+    }
+
+    @Test
+    void shouldLoginWithUppercaseEmail() throws Exception {
+        String registerBody = """
+                {
+                  "username": "nexa-user",
+                  "email": "nexa.user@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerBody))
+                .andExpect(status().isCreated());
+
+        String loginBody = """
+                {
+                  "email": "NEXA.USER@EXAMPLE.COM",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").isNotEmpty());
+    }
+
+    @Test
+    void shouldRejectMeWhenTokenSignatureIsTampered() throws Exception {
+        String registerBody = """
+                {
+                  "username": "nexa-user",
+                  "email": "nexa.user@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerBody))
+                .andExpect(status().isCreated());
+
+        String loginBody = """
+                {
+                  "email": "nexa.user@example.com",
+                  "password": "StrongPass123"
+                }
+                """;
+
+        MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString())
+                .path("data")
+                .path("token")
+                .asText();
+        char last = token.charAt(token.length() - 1);
+        char replacement = last == 'x' ? 'y' : 'x';
+        String tampered = token.substring(0, token.length() - 1) + replacement;
+
+        mockMvc.perform(get("/api/users/me")
+                        .header("Authorization", "Bearer " + tampered))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value("UNAUTHORIZED"));
+    }
+
+    @Test
     void shouldRejectMeWhenTokenIsValidButUserWasDeleted() throws Exception {
         String registerBody = """
                 {
