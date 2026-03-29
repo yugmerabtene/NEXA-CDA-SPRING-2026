@@ -16,6 +16,13 @@ Application cible: `AuthApp`
 - Gestion des roles (`USER`, `ADMIN`)
 - Dockerisation complete (`API + PostgreSQL`)
 
+Stack frontend imposee pour l'integration du projet:
+
+- HTML
+- CSS
+- JavaScript (vanilla)
+- Bootstrap (sans framework frontend supplementaire)
+
 Modeles et enum metier obligatoires du fil rouge:
 
 - `AppUser` (modele utilisateur principal)
@@ -31,6 +38,7 @@ Les chapitres appliquent en continu cette architecture:
 - `model`: objets metier persistants
 - `enum`: types metier fermes (exemple: `UserRole`)
 - `dto`: contrats entree/sortie API
+- `view`: contrats d'entree/sortie pour le frontend (HTML/CSS/JS + Bootstrap)
 - `mapper`: conversion `dto <-> model`
 - `exceptions`: exceptions metier + gestion globale
 - `validation`: regles de validation d'entree
