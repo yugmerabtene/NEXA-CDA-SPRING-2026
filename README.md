@@ -16,6 +16,11 @@ Application cible: `AuthApp`
 - Gestion des roles (`USER`, `ADMIN`)
 - Dockerisation complete (`API + PostgreSQL`)
 
+Modeles et enum metier obligatoires du fil rouge:
+
+- `AppUser` (modele utilisateur principal)
+- `UserRole` (enum des roles: `USER`, `ADMIN`)
+
 ## Architecture de reference (multi-layer)
 
 Les chapitres appliquent en continu cette architecture:
@@ -24,6 +29,7 @@ Les chapitres appliquent en continu cette architecture:
 - `service`: logique metier
 - `repository`: acces persistence
 - `model`: objets metier persistants
+- `enum`: types metier fermes (exemple: `UserRole`)
 - `dto`: contrats entree/sortie API
 - `mapper`: conversion `dto <-> model`
 - `exceptions`: exceptions metier + gestion globale
@@ -53,7 +59,7 @@ Les chapitres appliquent en continu cette architecture:
 ### Jour 2 - Persistence, modele utilisateur et inscription
 
 1. Objectifs pedagogiques du jour
-2. Modelisation du domaine utilisateur
+2. Modelisation du domaine utilisateur (`AppUser` + `UserRole` enum)
 3. JPA/Hibernate: mapping, contraintes, cycle de vie
 4. PostgreSQL et migrations Flyway
 5. Couche `repository` et requetes metier
@@ -79,7 +85,7 @@ Les chapitres appliquent en continu cette architecture:
    - `JwtAuthenticationFilter`
 5. Endpoint `POST /api/auth/login`
 6. Endpoint protege `GET /api/users/me`
-7. Roles et autorisations (`USER`, `ADMIN`)
+7. Roles et autorisations bases sur l'enum `UserRole` (`USER`, `ADMIN`)
 8. Couche `exceptions` niveau 3
    - `InvalidCredentialsException`
    - gestion `401` et `403`
@@ -119,6 +125,7 @@ Les chapitres appliquent en continu cette architecture:
 
 - Projet Spring Boot structure en architecture multi-layer
 - API REST securisee (inscription + connexion + endpoint protege)
+- Modele de roles via enum `UserRole` exploite en securite
 - Couche `exceptions` complete et standardisee
 - Suite de tests automatises (unitaires + integration)
 - Projet dockerise et reproductible
