@@ -14,6 +14,11 @@ En fin de chapitre, vous devez avoir:
 - un handler global d'exceptions,
 - des tests qui passent.
 
+Etat du chapitre dans le repository:
+
+- `main` contient le resultat final des 5 chapitres.
+- Ce chapitre decrit le socle minimal a atteindre a l'etape 1.
+
 ---
 
 ## 2) Theorie 

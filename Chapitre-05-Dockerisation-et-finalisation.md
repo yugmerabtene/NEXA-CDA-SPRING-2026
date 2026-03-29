@@ -11,6 +11,11 @@ Resultat attendu:
 - verification complete du flow register/login/me en conteneurs,
 - base de deploiement local reproductible.
 
+Etat du chapitre dans le repository:
+
+- `main` contient le resultat final dockerise.
+- Les commandes du chapitre permettent de rejouer la validation en local.
+
 ---
 
 ## 2) Theorie detaillee
@@ -95,15 +100,19 @@ Exemple `.env` local (formation):
 DB_URL=jdbc:postgresql://db:5432/authapp
 DB_USERNAME=authapp
 DB_PASSWORD=authapp
-JWT_SECRET=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZg==
+JWT_SECRET=replace_with_a_long_base64_secret
 JWT_EXPIRATION_SECONDS=3600
 ```
+
+Le fichier modele est disponible dans le repository:
+
+- `authapp-code/.env.example`
 
 Parametrage:
 
 - `depends_on` avec `condition: service_healthy`,
 - variables `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
-- variables JWT,
+- variables JWT (`JWT_SECRET` obligatoire),
 - port `8080` expose pour le frontend et les tests API.
 
 ## Etape 4 - Construire et lancer
@@ -178,13 +187,13 @@ Attention securite:
 ## 3.1 Quiz rapide (validation)
 
 1. Pourquoi utiliser un Dockerfile multi-stage ?
-2. Pourquoi ajouter un healthcheck sur l'application ?
+2. Pourquoi ajouter un healthcheck sur la base de donnees ?
 3. Pourquoi ne jamais commiter un secret de production dans Git ?
 
 Corrige synthese:
 
 - Pour separer build/runtime et reduire la taille/surface d'attaque.
-- Pour detecter rapidement les conteneurs "up mais non prets".
+- Pour eviter que l'API demarre avant que la base soit prete.
 - Pour eviter fuite de credentials et compromission.
 
 ## Etape 7 - Arret propre

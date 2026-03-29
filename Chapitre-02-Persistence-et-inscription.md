@@ -14,6 +14,11 @@ Resultat attendu:
 - un endpoint `POST /api/auth/register`,
 - des tests automatiques qui valident le flux.
 
+Etat du chapitre dans le repository:
+
+- `main` contient le resultat final du projet.
+- Les etapes ci-dessous representent la cible pedagogique de l'increment persistence + inscription.
+
 ---
 
 ## 2) Theorie detaillee
@@ -83,7 +88,7 @@ Explication:
 - `test` cible H2 en memoire,
 - Flyway est actif dans les deux pour executer les migrations.
 
-## Etape 2 - Creer la migration SQL
+## Etape 2 - Creer les migrations SQL
 
 Fichier: `authapp-code/src/main/resources/db/migration/V1__create_users_table.sql`
 
@@ -104,6 +109,11 @@ Explication du code:
 - contrainte unique email pour garantir la regle metier,
 - `role` persiste sous forme texte (lisible),
 - `created_at` utile pour audit et traçabilite.
+
+Durcissement SQL ajoute ensuite:
+
+- `authapp-code/src/main/resources/db/migration/V2__add_role_check_constraint.sql`
+- objectif: garantir en base que `role` appartient a `USER` ou `ADMIN`.
 
 ## Etape 3 - Implementer Model et Enum
 

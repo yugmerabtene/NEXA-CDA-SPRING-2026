@@ -12,6 +12,11 @@ Resultat attendu:
 - un test de livraison frontend (HTML/CSS/JS + Bootstrap),
 - une base de regression fiable avant Docker (chapitre 5).
 
+Etat du chapitre dans le repository:
+
+- `main` contient deja la version finalisee des tests.
+- Ce chapitre explique la construction progressive de cette qualite de test.
+
 ---
 
 ## 2) Theorie detaillee

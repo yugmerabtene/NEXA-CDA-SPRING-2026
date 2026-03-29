@@ -57,6 +57,12 @@ Les chapitres appliquent en continu cette architecture:
 - Verifier la checklist de fin de chapitre
 - Executer les tests avant de passer au chapitre suivant
 
+Etat du repository:
+
+- La branche `main` represente l'etat final du projet (chapitres 1 a 5 completes).
+- Chaque chapitre decrit l'etat cible pedagogique de son etape.
+- Pour l'enseignement progressif, suivre les etapes dans l'ordre des chapitres.
+
 Prerequis:
 
 - Java 21
@@ -64,6 +70,22 @@ Prerequis:
 - Docker + Docker Compose
 - IDE Java (IntelliJ, VS Code, Eclipse)
 - Base HTTP/JSON/REST
+
+Variables d'environnement minimales:
+
+- `JWT_SECRET` (obligatoire pour Docker Compose)
+- `JWT_EXPIRATION_SECONDS` (optionnel, defaut `3600`)
+- `DB_URL` (optionnel en local/compose, defaut PostgreSQL local)
+- `DB_USERNAME` (optionnel, defaut `authapp`)
+- `DB_PASSWORD` (optionnel en local, defaut `authapp`)
+
+Note:
+
+- En execution locale profil `dev`, un fallback JWT de formation existe dans `application-dev.yml`.
+
+Pour Docker Compose:
+
+- Copier `authapp-code/.env.example` vers `authapp-code/.env` puis renseigner `JWT_SECRET`.
 
 ### Jour 1 - Fondations Spring Boot et architecture multi-layer
 

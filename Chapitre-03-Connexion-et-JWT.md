@@ -1,4 +1,4 @@
-# Chapitre 03 - Connexion et JWT (Security + View + Frontend Bootstrap)
+# Chapitre 03 - Connexion et JWT (Security + DTO + Frontend Bootstrap)
 
 ## 1) Objectif du chapitre
 
@@ -11,6 +11,11 @@ Resultat attendu:
 - endpoint protege `GET /api/users/me`,
 - frontend HTML/CSS/JavaScript + Bootstrap capable de tester le flow,
 - tests d'integration verts.
+
+Etat du chapitre dans le repository:
+
+- `main` contient le resultat final du chapitre et des chapitres suivants.
+- Les extraits ci-dessous representent la cible pedagogique de l'etape JWT.
 
 ---
 
@@ -77,13 +82,14 @@ Fichier: `authapp-code/src/main/resources/application.yml`
 app:
   security:
     jwt:
-      secret: ${JWT_SECRET:...}
+      secret: ${JWT_SECRET}
       expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
 ```
 
 Explication:
 
 - cle et expiration externalisees,
+- en `dev`, un fallback local est defini dans `application-dev.yml` pour la formation,
 - override possible via variables d'environnement.
 
 ## Etape 3 - Construire la couche security
